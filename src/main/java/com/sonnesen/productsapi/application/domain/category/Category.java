@@ -1,7 +1,6 @@
 package com.sonnesen.productsapi.application.domain.category;
 
 import java.time.Instant;
-import java.util.Objects;
 
 import lombok.Getter;
 
@@ -18,7 +17,7 @@ public class Category {
 
     private Category(final CategoryId id, final String name, final String description, final boolean active,
             final Instant createdAt, final Instant updatedAt, final Instant deletedAt) {
-        this.id = Objects.requireNonNull(id, "id cannot be null");
+        this.id = id;
         this.name = name;
         this.description = description;
         this.active = active;
@@ -28,10 +27,9 @@ public class Category {
     }
 
     public static Category newCategory(final String name, final String description, final boolean active) {
-        final var id = CategoryId.generate();
         final var now = Instant.now();
         final var deletedAt = active ? null : now;
-        return new Category(id, name, description, active, now, now, deletedAt);
+        return new Category(new CategoryId(null), name, description, active, now, now, deletedAt);
     }
 
     public static Category with(final CategoryId id, final String name, final String description,
@@ -47,14 +45,12 @@ public class Category {
         }
         this.name = name;
         this.description = description;
-        this.updatedAt = Instant.now();
         return this;
     }
 
     public Category activate() {
         this.active = true;
         this.deletedAt = null;
-        this.updatedAt = Instant.now();
         return this;
     }
 
@@ -63,7 +59,6 @@ public class Category {
             this.deletedAt = Instant.now();
         }
         this.active = false;
-        this.updatedAt = Instant.now();
         return this;
     }
 }

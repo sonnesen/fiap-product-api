@@ -2,11 +2,16 @@ package com.sonnesen.productsapi.infrastructure.persistence.entities;
 
 import java.time.Instant;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
 import com.sonnesen.productsapi.application.domain.category.Category;
 import com.sonnesen.productsapi.application.domain.category.CategoryId;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -27,6 +32,7 @@ import lombok.ToString;
 public class CategoryJPAEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, unique = true, length = 36)
     private String id;
 
@@ -40,18 +46,20 @@ public class CategoryJPAEntity {
     private boolean active;
 
     @Column(name = "created_at", nullable = false)
+    @CreatedDate
     private Instant createdAt;
 
     @Column(name = "updated_at", nullable = false)
+    @LastModifiedDate
     private Instant updatedAt;
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
-    public static CategoryJPAEntity of(Category newCategory) {
-        return new CategoryJPAEntity(newCategory.getId().value(), newCategory.getName(), newCategory.getDescription(),
-                newCategory.isActive(), newCategory.getCreatedAt(), newCategory.getUpdatedAt(),
-                newCategory.getDeletedAt());
+    public static CategoryJPAEntity of(final Category category) {
+        return new CategoryJPAEntity(category.getId().value(), category.getName(), category.getDescription(),
+                category.isActive(), category.getCreatedAt(), category.getUpdatedAt(),
+                category.getDeletedAt());
     }
 
     public Category toCategory() {

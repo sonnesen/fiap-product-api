@@ -1,6 +1,6 @@
 package com.sonnesen.productsapi.infrastructure.api;
 
-import java.util.List;
+import java.net.URI;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sonnesen.categories.api.CategoriesApi;
 import com.sonnesen.categories.model.CategoryDTO;
 import com.sonnesen.categories.model.CreateCategoryDTO;
+import com.sonnesen.categories.model.PaginatedCategoriesDTO;
 import com.sonnesen.categories.model.UpdateCategoryDTO;
+import com.sonnesen.productsapi.application.domain.pagination.Page;
+import com.sonnesen.productsapi.application.domain.pagination.Pagination;
 import com.sonnesen.productsapi.application.usecases.category.create.CategoryCreateUseCase;
 import com.sonnesen.productsapi.application.usecases.category.delete.CategoryDeleteUseCase;
 import com.sonnesen.productsapi.application.usecases.category.retrieve.get.CategoryGetByIdUseCase;
@@ -34,7 +37,8 @@ public class CategoryController implements CategoriesApi {
     public ResponseEntity<CategoryDTO> createCategory(final CreateCategoryDTO body) {
         final var useCaseInput = categoryMapper.fromDTO(body);
         final var useCaseOutput = categoryCreateUseCase.execute(useCaseInput);
-        return ResponseEntity.ok(categoryMapper.toDTO(useCaseOutput));
+        final var uri = URI.create("/categories/" + useCaseOutput.id());
+        return ResponseEntity.created(uri).body(categoryMapper.toDTO(useCaseOutput));
     }
 
     @Override
@@ -46,7 +50,7 @@ public class CategoryController implements CategoriesApi {
     @Override
     public ResponseEntity<CategoryDTO> getCategory(final UUID categoryId) {
         final var output = categoryMapper.toDTO(categoryGetByIdUseCase.execute(categoryId.toString()));
-        return ResponseEntity.ok(output);
+        return ResponseEntity.ok(output);        
     }
 
     @Override
@@ -57,8 +61,16 @@ public class CategoryController implements CategoriesApi {
     }
 
     @Override
-    public ResponseEntity<List<CategoryDTO>> listCategories() {
-        return ResponseEntity.ok(categoryMapper.toDTO(categoryListUseCase.execute()));
+    public ResponseEntity<PaginatedCategoriesDTO> listCategories(final Integer page, final Integer perPage) {
+        Pagination<CategoryDTO> categories = categoryListUseCase.execute(new Page(page, perPage)).mapItems(categoryMapper::toDTO);
+
+        PaginatedCategoriesDTO paginatedCategories = new PaginatedCategoriesDTO()
+            .items(categories.items())
+            .page(categories.currentPage())
+            .perPage(categories.perPage())
+            .total(categories.total());
+
+        return ResponseEntity.ok(paginatedCategories);
     }
 
 }

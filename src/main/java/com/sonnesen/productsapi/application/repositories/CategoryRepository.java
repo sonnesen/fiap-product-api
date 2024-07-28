@@ -1,10 +1,11 @@
 package com.sonnesen.productsapi.application.repositories;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.sonnesen.productsapi.application.domain.category.Category;
 import com.sonnesen.productsapi.application.domain.category.CategoryId;
+import com.sonnesen.productsapi.application.domain.pagination.Page;
+import com.sonnesen.productsapi.application.domain.pagination.Pagination;
 
 public interface CategoryRepository {
 
@@ -14,7 +15,7 @@ public interface CategoryRepository {
 
     Optional<Category> findById(CategoryId anId);
 
-    List<Category> findAll();
+    Pagination<Category> findAll(Page page);
 
     void deleteById(CategoryId anId);
 

@@ -1,10 +1,13 @@
 package com.sonnesen.productsapi.infrastructure.repositories;
 
-import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Pageable;
 
 import com.sonnesen.productsapi.application.domain.category.Category;
 import com.sonnesen.productsapi.application.domain.category.CategoryId;
+import com.sonnesen.productsapi.application.domain.pagination.Page;
+import com.sonnesen.productsapi.application.domain.pagination.Pagination;
 import com.sonnesen.productsapi.application.repositories.CategoryRepository;
 import com.sonnesen.productsapi.infrastructure.persistence.entities.CategoryJPAEntity;
 import com.sonnesen.productsapi.infrastructure.persistence.repositories.CategoryJPARepository;
@@ -24,8 +27,18 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
-    public List<Category> findAll() {
-        return categoryJPARepository.findAll().stream().map(CategoryJPAEntity::toCategory).toList();
+    public Pagination<Category> findAll(final Page page) {
+        final var withPage = Pageable.ofSize(page.perPage()).withPage(page.currentPage());
+        final var pageResult = categoryJPARepository.findAll(withPage);
+
+        final var pagination = new Pagination<>(
+            pageResult.getNumber(), 
+            pageResult.getSize(), 
+            pageResult.getTotalElements(), 
+            pageResult.map(CategoryJPAEntity::toCategory).toList()
+        );
+
+        return pagination;
     }
 
     @Override

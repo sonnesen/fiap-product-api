@@ -1,9 +1,9 @@
 package com.sonnesen.productsapi.application.usecases.category.retrieve.list;
 
-import java.util.List;
+import com.sonnesen.productsapi.application.domain.pagination.Page;
+import com.sonnesen.productsapi.application.domain.pagination.Pagination;
+import com.sonnesen.productsapi.application.usecases.UseCase;
 
-import com.sonnesen.productsapi.application.usecases.NullaryUseCase;
-
-public abstract class CategoryListUseCase extends NullaryUseCase<List<CategoryListUseCaseOutput>> {
+public abstract class CategoryListUseCase extends UseCase<Page, Pagination<CategoryListUseCaseOutput>> {
 
 }

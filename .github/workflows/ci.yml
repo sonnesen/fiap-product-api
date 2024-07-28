@@ -28,4 +28,15 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn clean package -DskipTests
+    - name: Test with Maven
+      run: mvn test
+    - name: SonarQube Analysis
+      uses: SonarSource/sonar-scanner-action@master
+      with:
+        sonar.projectKey: fiap-product-api
+        sonar.organization: my-organization
+        sonar.host.url: https://sonarcloud.io
+        sonar.login: ${{ secrets.SONAR_TOKEN }}
+    
+      

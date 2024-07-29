@@ -13,11 +13,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 public class CategoryControllerIT {
 
     @Autowired
@@ -304,49 +306,30 @@ public class CategoryControllerIT {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         final DocumentContext documentContext = JsonPath.parse(response.getBody());
-        final String id = documentContext.read("$.[0].id", String.class);
-        final String name = documentContext.read("$.[0].name", String.class);
-        final String description = documentContext.read("$.[0].description", String.class);
-        final String active = documentContext.read("$.[0].active", String.class);        
+        
+        final int page = documentContext.read("$.page", Integer.class);
+        final int perPage = documentContext.read("$.perPage", Integer.class);
+        final int total = documentContext.read("$.total", Integer.class);
+        final int totalOfItems = documentContext.read("$.items.length()", Integer.class);
+        
+        final String id = documentContext.read("$.items[0].id", String.class);
+        final String name = documentContext.read("$.items[0].name", String.class);
+        final String description = documentContext.read("$.items[0].description", String.class);
+        final String active = documentContext.read("$.items[0].active", String.class);
+        final String createdAt = documentContext.read("$.items[0].createdAt", String.class);
+        final String updatedAt = documentContext.read("$.items[0].updatedAt", String.class);
+        final String deletedAt = documentContext.read("$.items[0].deletedAt", String.class);
 
+        assertThat(page).isEqualTo(0);
+        assertThat(perPage).isEqualTo(10);
+        assertThat(total).isEqualTo(totalOfItems);
         assertThat(id).isEqualTo("559e30e7-27a4-4db4-aca8-f8b1f5cd66bd");
         assertThat(name).isEqualTo("Category 1");
         assertThat(description).isEqualTo("Description 1");
         assertThat(active).isEqualTo("true");
-        
-        // final int total = documentContext.read("$.total", Integer.class);
-        // final int limit = documentContext.read("$.limit", Integer.class);
-        // final int offset = documentContext.read("$.offset", Integer.class);
-        // final int count = documentContext.read("$.count", Integer.class);
-        // final int totalPages = documentContext.read("$.totalPages", Integer.class);
-        // final String next = documentContext.read("$.next", String.class);
-        // final String previous = documentContext.read("$.previous", String.class);
-        // final String first = documentContext.read("$.first", String.class);
-        // final String last = documentContext.read("$.last", String.class);
-        // final String id = documentContext.read("$.items[0].id", String.class);
-        // final String name = documentContext.read("$.items[0].name", String.class);
-        // final String description = documentContext.read("$.items[0].description", String.class);
-        // final String active = documentContext.read("$.items[0].active", String.class);
-        // final String createdAt = documentContext.read("$.items[0].createdAt", String.class);
-        // final String updatedAt = documentContext.read("$.items[0].updatedAt", String.class);
-        // final String deletedAt = documentContext.read("$.items[0].deletedAt", String.class);
-
-        // assertThat(total).isEqualTo(7);
-        // assertThat(limit).isEqualTo(10);
-        // assertThat(offset).isEqualTo(0);
-        // assertThat(count).isEqualTo(7);
-        // assertThat(totalPages).isEqualTo(1);
-        // assertThat(next).isNull();
-        // assertThat(previous).isNull();
-        // assertThat(first).isEqualTo("/categories?limit=10&offset=0");
-        // assertThat(last).isEqualTo("/categories?limit=10&offset=0");
-        // assertThat(id).isEqualTo("559e30e7-27a4-4db4-aca8-f8b1f5cd66bd");
-        // assertThat(name).isEqualTo("Category 1");
-        // assertThat(description).isEqualTo("Description 1");
-        // assertThat(active).isEqualTo("true");
-        // assertThat(createdAt).isNotNull();
-        // assertThat(updatedAt).isNotNull();
-        // assertThat(deletedAt).isNull();
+        assertThat(createdAt).isNotNull();
+        assertThat(updatedAt).isNotNull();
+        assertThat(deletedAt).isNull();
     }
 
 }

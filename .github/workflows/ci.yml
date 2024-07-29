@@ -13,44 +13,40 @@ on:
     branches: ["feature/**", "bugfix/**"]
   # Habilitando gatilho para execução manual
   workflow_dispatch:
-  
+
 jobs:
   build:
-  
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn clean package -DskipTests
-    - name: Test with Maven
-      run: mvn test
-    - name: Analyze with SonarCloud
-      # You can pin the exact commit or the version.
-      # uses: SonarSource/sonarcloud-github-action@v2.2.0
-      uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
-      with:
-        # Additional arguments for the SonarScanner CLI
-        args:
-          # Unique keys of your project and organization. You can find them in SonarCloud > Information (bottom-left menu)
-          # mandatory
-          -Dsonar.projectKey=sonnesen_fiap-product-api
-          -Dsonar.organization=sonnesen
-          # Comma-separated paths to directories containing main source files.
-          #-Dsonar.sources= # optional, default is project base directory
-          # Comma-separated paths to directories containing test source files.
-          #-Dsonar.tests= # optional. For more info about Code Coverage, please refer to https://docs.sonarcloud.io/enriching/test-coverage/overview/
-          # Adds more detail to both client and server-side analysis logs, activating DEBUG mode for the scanner, and adding client-side environment variables and system properties to the server-side log of analysis report processing.
-          #-Dsonar.verbose= # optional, default is false
-        # When you need the analysis to take place in a directory other than the one from which it was launched, default is .
-        projectBaseDir: .
-    
-      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven
+      - name: Build with Maven
+        run: mvn clean verify
+      - name: SonarCloud Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=sonnesen_fiap-product-api \
+            -Dsonar.organization=sonnesen \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: target/surefire-reports

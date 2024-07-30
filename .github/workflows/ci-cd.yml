@@ -10,7 +10,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: ["feature/**", "bugfix/**"]
+    branches: ["main", "develop", "release/**", "feature/**", "bugfix/**"]
   # Habilitando gatilho para execução manual
   workflow_dispatch:
 

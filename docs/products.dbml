@@ -7,7 +7,6 @@ Table products {
   category_id uuid [ref: > categories.id]
   created_at timestamp
   updated_at timestamp
-  deleted_at timestamp
 }
 
 Table categories {
@@ -17,5 +16,4 @@ Table categories {
   active boolean [default: true]
   created_at timestamp
   updated_at timestamp
-  deleted_at timestamp
 }

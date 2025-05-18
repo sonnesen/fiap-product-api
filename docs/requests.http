@@ -1,47 +1,52 @@
-POST http://localhost:8080/categories HTTP/1.1
-content-type: application/json
+### Create a new Category
+POST http://localhost:8080/categories
+Content-Type: application/json
 
 {
-    "name": "Category 1",
-    "description": "Category 1 description",
+    "name": "Electronics",
+    "description": "Devices and gadgets"
+}
+
+### List all Categories
+GET http://localhost:8080/categories
+
+### List Categories with Pagination
+GET http://localhost:8080/categories?page=0&perPage=5
+
+### Get a Category by ID
+GET http://localhost:8080/categories/4f7a526b-b415-4e82-a55c-995a4d979fc1
+
+### Return 404 for non-existing Category
+GET http://localhost:8080/categories/8c859fb1-e5d6-427f-a528-0afc87a990a8
+
+### Return 404 for non-existing Category
+PUT http://localhost:8080/categories/8c859fb1-e5d6-427f-a528-0afc87a990a9
+Content-Type: application/json
+
+{
+    "name": "Updated Electronics",
+    "description": "Updated devices and gadgets",
     "active": true
 }
 
-####
-POST http://localhost:8080/categories HTTP/1.1
-content-type: application/json
+### Return 400 for invalid Category data
+PUT http://localhost:8080/categories/4f7a526b-b415-4e82-a55c-995a4d979fc1
+Content-Type: application/json
 
 {
-    "name": "Category 2",
-    "description": "Category 2 description",
+    "name": "Updated Electronics",
+    "description": "Updated devices and gadgets"
+}
+
+### Update a Category
+PUT http://localhost:8080/categories/4f7a526b-b415-4e82-a55c-995a4d979fc1
+Content-Type: application/json
+
+{
+    "name": "Updated Electronics",
+    "description": "Updated devices and gadgets",
     "active": true
 }
 
-####
-POST http://localhost:8080/categories HTTP/1.1
-content-type: application/json
-
-{
-    "name": "Category 3",
-    "description": "Category 3 description",
-    "active": false
-}
-
-####
-GET http://localhost:8080/categories?page=3&perPage=5 HTTP/1.1
-
-####
-GET http://localhost:8080/categories/a92d1f1f-5cb2-4c8d-a344-d732d280ba66 HTTP/1.1
-
-####
-DELETE http://localhost:8080/categories/a92d1f1f-5cb2-4c8d-a344-d732d280ba66 HTTP/1.1
-
-####
-PUT http://localhost:8080/categories/d7a18c7b-7b59-4a13-a9b7-1dd3274b7ddd HTTP/1.1
-content-type: application/json
-
-{
-    "name": "Category 2 updated",
-    "description": "Category 2 description updated",
-    "active": false
-}
+### Delete a Category
+DELETE http://localhost:8080/categories/8c859fb1-e5d6-427f-a528-0afc87a990a9

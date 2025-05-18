@@ -6,19 +6,24 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.1</version>
+		<version>3.4.5</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.sonnesen</groupId>
 	<artifactId>products-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>products-api</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>17</java.version>
-		<mapstruct.version>1.5.5.Final</mapstruct.version>
+		<java.version>21</java.version>
+		<springdoc-openapi-starter-webmvc-ui.version>2.6.0</springdoc-openapi-starter-webmvc-ui.version>
+		<org.mapstruct.version>1.6.3</org.mapstruct.version>
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+		<swagger-annotations.version>2.2.32</swagger-annotations.version>
+		<swagger-codegen-maven-plugin.version>3.0.68</swagger-codegen-maven-plugin.version>
+		<jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
+		<jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
 	</properties>
 	<dependencies>
 
@@ -57,7 +62,12 @@
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations</artifactId>
-			<version>2.2.22</version>
+			<version>${swagger-annotations.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>${springdoc-openapi-starter-webmvc-ui.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -78,7 +88,12 @@
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
-			<version>${mapstruct.version}</version>
+			<version>${org.mapstruct.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openapitools</groupId>
+			<artifactId>jackson-databind-nullable</artifactId>
+			<version>${jackson-databind-nullable.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -88,10 +103,12 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<!-- https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-maven-plugin/README.md -->
+			<!-- https://openapi-generator.tech/docs/generators/java -->
 			<plugin>
-				<groupId>io.swagger.codegen.v3</groupId>
-				<artifactId>swagger-codegen-maven-plugin</artifactId>
-				<version>3.0.57</version>
+				<groupId>org.openapitools</groupId>
+  				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<version>7.13.0</version>
 				<executions>
 					<execution>
 						<id>products</id>
@@ -99,16 +116,15 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/api/products.yaml</inputSpec>
-							<language>spring</language>
-							<generateSupportingFiles>false</generateSupportingFiles>
+							<inputSpec>${project.basedir}/src/main/resources/api/products.yml</inputSpec>
+							<generatorName>spring</generatorName>
 							<apiPackage>com.sonnesen.products.api</apiPackage>
 							<modelPackage>com.sonnesen.products.model</modelPackage>
 							<modelNameSuffix>DTO</modelNameSuffix>
 							<configOptions>
 								<interfaceOnly>true</interfaceOnly>
-								<jakarta>true</jakarta>
-								<java8>true</java8>
+								<useJakartaEe>true</useJakartaEe>
+								<useSpringBoot>true</useSpringBoot>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -118,22 +134,20 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/api/categories.yaml</inputSpec>
-							<language>spring</language>
-							<generateSupportingFiles>false</generateSupportingFiles>
+							<inputSpec>${project.basedir}/src/main/resources/api/categories.yml</inputSpec>
+							<generatorName>spring</generatorName>
 							<apiPackage>com.sonnesen.categories.api</apiPackage>
 							<modelPackage>com.sonnesen.categories.model</modelPackage>
 							<modelNameSuffix>DTO</modelNameSuffix>
 							<configOptions>
 								<interfaceOnly>true</interfaceOnly>
-								<jakarta>true</jakarta>
-								<java8>true</java8>
+								<useJakartaEe>true</useJakartaEe>
+								<useSpringBoot>true</useSpringBoot>
 							</configOptions>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
@@ -147,7 +161,10 @@
 						<configuration>
 							<sources>
 								<source>
-									${project.build.directory}/generated-sources/swagger/src/main/java/
+									${project.build.directory}/generated-sources/openapi/src/main/java/
+								</source>
+								<source>
+									${project.build.directory}/generated-sources/annotations/
 								</source>
 							</sources>
 						</configuration>
@@ -157,7 +174,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -165,7 +181,7 @@
 						<path>
 							<groupId>org.mapstruct</groupId>
 							<artifactId>mapstruct-processor</artifactId>
-							<version>${mapstruct.version}</version>
+							<version>${org.mapstruct.version}</version>
 						</path>
 						<path>
 							<groupId>org.projectlombok</groupId>
@@ -195,7 +211,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.12</version>
+				<version>${jacoco-maven-plugin.version}</version>
 				<executions>
 					<execution>
 						<goals>

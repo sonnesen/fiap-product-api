@@ -15,6 +15,25 @@ on:
   workflow_dispatch:
 
 jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: java # Specify the language to analyze
+
+    - name: Autobuild Java project
+      uses: github/codeql-action/autobuild@v3 # CodeQL attempts to build the project
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      
   build:
     runs-on: ubuntu-latest
 
@@ -57,13 +76,6 @@ jobs:
         with:
           name: test-results
           path: target/surefire-reports
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          category: "/language:java"
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

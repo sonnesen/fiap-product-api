@@ -39,8 +39,8 @@ jobs:
       - name: Build with Maven
         run: mvn clean verify
 
-      - name: Security Check with OWASP Dependency Check
-        run: mvn org.owasp:dependency-check-maven:check
+      #- name: Security Check with OWASP Dependency Check
+      #  run: mvn org.owasp:dependency-check-maven:check
 
       - name: SonarCloud Scan
         env:

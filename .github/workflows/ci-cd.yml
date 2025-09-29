@@ -15,30 +15,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  analyze:
-    name: Analyze
-    runs-on: ubuntu-latest
-    if: false # disable the job
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: java # Specify the language to analyze
-
-    - name: Autobuild Java project
-      uses: github/codeql-action/autobuild@v3 # CodeQL attempts to build the project
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      
   build:
     name: Build
     runs-on: ubuntu-latest
-    # needs: analyze
     
     steps:
       - name: Checkout repository

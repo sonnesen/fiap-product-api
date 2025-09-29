@@ -66,48 +66,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Azure login
-        uses: azure/login@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
         with:
-          creds: ${{ secrets.AZURE_CRENDENTIALS }}
-
-      - name: ACR login
-        run: az acr login --name ${{ secrets.ACR_NAME }}
-        
-      - name: Build docker image
-        run: |
-          IMAGE_NAME=${{ secrets.ACR_NAME }}.azurecr.io/fiap-product-api:latest
-          docker build -t $IMAGE_NAME .
-          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
-          
-      - name: Push image to ACR
-        run: docker push $IMAGE_NAME
-
-      - name: AKS context config
-        run: |
-          az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }}
-
-      - name: Deploy to AKS
-        run: |
-          kubectl set image deployment/${{ secrets.APP_NAME }} \
-          ${{ secrets.APP_NAME }}=$IMAGE_NAME --record
-          kubectl rollout status deployment/${{ secrets.APP_NAME }}          
-                                       
-      #- name: Set up QEMU
-      #  uses: docker/setup-qemu-action@v3
-      #- name: Set up Docker Buildx
-      #  uses: docker/setup-buildx-action@v3
-      #- name: Login to DockerHub
-      #  uses: docker/login-action@v3
-      #  with:
-      #    username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #    password: ${{ secrets.DOCKERHUB_TOKEN }}
-      #- name: Build and push
-      #  uses: docker/build-push-action@v6
-      #  with:
-      #    context: .
-      #    file: ./Dockerfile
-      #    push: true
-      #    tags: |
-      #      ${{ secrets.DOCKERHUB_USERNAME }}/fiap-product-api:v${{ github.run_number }}
-      #      ${{ secrets.DOCKERHUB_USERNAME }}/fiap-product-api:latest
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/fiap-product-api:v${{ github.run_number }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/fiap-product-api:latest

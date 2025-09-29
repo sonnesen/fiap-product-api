@@ -42,11 +42,10 @@ jobs:
           mvn sonar:sonar \
             -Dsonar.projectKey=sonnesen_fiap-product-api \
             -Dsonar.organization=sonnesen \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: target/surefire-reports
+            -Dsonar.host.url=https://sonarcloud.io
+      # - name: Upload Test Results
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: test-results
+      #     path: target/surefire-reports

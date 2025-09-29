@@ -1,7 +1,7 @@
 name: Build and deploy a containerized web app to Azure Web App
 
 env:
-  AZURE_WEBAPP_NAME: "fiap-product-api"
+  AZURE_WEBAPP_NAME: "fiap-product-app"
 
 on:
   #push:

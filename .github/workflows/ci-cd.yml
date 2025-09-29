@@ -74,4 +74,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fiap-product-api:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/fiap-product-api:v${{ github.run_number }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/fiap-product-api:latest
